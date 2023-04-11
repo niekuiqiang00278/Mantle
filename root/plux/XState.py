@@ -33,8 +33,15 @@ class XState:
 
 
 class XSkin:
-    def __init__(self):
-        pass
-
     def __call__(self, func):
-        pass
+        def wrapper(*args, **kwargs):
+            state = kwargs.get('state', None)
+            if state:
+                if state.code == -1:
+                    pass
+                else:
+                    return func(*args, **kwargs)
+            else:
+                pass
+
+        return wrapper
