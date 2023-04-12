@@ -1,3 +1,5 @@
+from server.fragment.ClientFragment import ClientFragment
+from server.fragment.MasterFragment import MasterFragment
 from server.fragment.MsFragment import MsFragment
 from server.plux.XActivity import XActivity
 from fastapi import FastAPI
@@ -9,6 +11,8 @@ class MyApp(XActivity):
 
     def fragment(self, app: FastAPI):
         MsFragment(app)
+        MasterFragment(app)
+        ClientFragment(app)
 
 
 if __name__ == '__main__':
