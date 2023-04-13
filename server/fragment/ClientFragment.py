@@ -6,13 +6,16 @@
 # @Software: PyCharm
 from fastapi import Depends, APIRouter
 from server.auxi.depends.SimpDepends import SimpDepends
+from server.auxi.model.LoAuModel import LoginModel
 from server.plux.XFragment import XFragment, FragmentInjection
 
 
-@FragmentInjection(prefix='/master', dependencies=[Depends(SimpDepends())])
+@FragmentInjection(prefix='/client', dependencies=[Depends(SimpDepends())])
 class ClientFragment(XFragment):
     def __init__(self, app):
         XFragment.__init__(self, app)
 
     def register_router(self, router: APIRouter):
-        pass
+        @router.post('/login')
+        async def login(item:LoginModel):
+            pass

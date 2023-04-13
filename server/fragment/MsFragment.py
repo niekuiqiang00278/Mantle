@@ -1,7 +1,8 @@
+from server.auxi.apm.MyApp import apm,CallModel
 from server.auxi.depends.SimpDepends import SimpDepends
 from server.auxi.model.LoAuModel import LoginModel
 from server.plux.XFragment import XFragment, FragmentInjection
-from fastapi import FastAPI, APIRouter, Depends
+from fastapi import FastAPI, APIRouter, Depends,WebSocket,WebSocketDisconnect
 
 
 @FragmentInjection(prefix='/ffw', dependencies=[Depends(SimpDepends())])
@@ -16,4 +17,13 @@ class MsFragment(XFragment):
 
         @router.post('/login')
         async def login(item: LoginModel):
-            pass
+            apm.adds(item)
+
+        @router.websocket('/test/{aka}')
+        async def test(ws:WebSocket,aka:str):
+            def call(data:CallModel):
+                print(aka,data)
+            await apm.websocket(ws,aka,call)
+
+
+

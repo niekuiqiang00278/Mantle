@@ -9,10 +9,12 @@ class MyApp(XActivity):
     def __init__(self):
         XActivity.__init__(self)
 
+    def bis(self):
+        pass
     def fragment(self, app: FastAPI):
         MsFragment(app)
-        MasterFragment(app)
-        ClientFragment(app)
+        # MasterFragment(app)
+        # ClientFragment(app)
 
 
 if __name__ == '__main__':
