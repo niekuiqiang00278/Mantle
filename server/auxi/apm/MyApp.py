@@ -7,34 +7,49 @@
 import time
 
 from cacheout import Cache
-import bcrypt,asyncio
+import bcrypt, asyncio
 from root.utils.StateUtils import StateUtils
 from server.auxi.apm.base.wrapper.UecWrapper import UecWrapper
 from server.auxi.model.LoAuModel import LoginModel
-from fastapi import WebSocket,WebSocketDisconnect
+from fastapi import WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 from typing import Any
+
+
 class CallModel(BaseModel):
-    act:str
-    por:str
-    data:Any
+    act: str
+    por: str
+    data: Any
+
+
 class MyApp:
     def __init__(self):
+        self.avem = 'avem'
         self.cache = Cache()
-        self.user_list = {
-            'cap669': 'absdcc',
-            'cand': '134679'
-        }
+        self.user_list = {'cap669': {'pw': 'absdcc', 'aka': 'akacap669'}, 'cand': {'pw': 'absdcc', 'aka': 'akacand'},
+                          'slou': {'pw': 'absdcc', 'aka': 'akaslou'}, 'dwac': {'pw': 'absdcc', 'aka': 'akadwac'},
+                          'tran': {'pw': 'absdcc', 'aka': 'akatran'}, 'kuff': {'pw': 'absdcc', 'aka': 'akakuff'},
+                          'reep': {'pw': 'absdcc', 'aka': 'akareep'}, 'cusm': {'pw': 'absdcc', 'aka': 'akacusm'},
+                          'posh': {'pw': 'absdcc', 'aka': 'akaposh'}, 'she': {'pw': 'absdcc', 'aka': 'akashe'},
+                          'psel': {'pw': 'absdcc', 'aka': 'akapsel'}, 'psek': {'pw': 'absdcc', 'aka': 'akapsek'},
+                          'fut': {'pw': 'absdcc', 'aka': 'akafut'}, 'bift': {'pw': 'absdcc', 'aka': 'akabift'},
+                          'rhot': {'pw': 'absdcc', 'aka': 'akarhot'}, 'jad': {'pw': 'absdcc', 'aka': 'akajad'},
+                          'kim': {'pw': 'absdcc', 'aka': 'akakim'}}
 
     @UecWrapper()
     def adds(self, item: LoginModel, state: StateUtils):
-        pw = self.user_list.get(item.us)
+        d0 = self.user_list.get(item.us)
+        pw = d0.get('pw')
         k0 = {}
-        if bcrypt.checkpw(pw.encode('utf-8'), str.encode(item.pw)):
-            k0.update(dict(por='por' + item.us, us=item.us))
-            self.cache.add('aka' + item.us, k0, 15)
-            state.succ(1, '登录成功')
-        else:
+        try:
+            if bcrypt.checkpw(pw.encode('utf-8'), str.encode(item.pw)):
+                aka = d0.get('aka')
+                k0.update(dict(aka=aka, por='por' + item.us, us=item.us, ws=False))
+                self.cache.add(aka, k0, 15)
+                state.succ(1, '登录成功')
+            else:
+                state.errn('登录失败')
+        except:
             state.errn('登录失败')
         return k0, state
 
@@ -51,13 +66,18 @@ class MyApp:
         return state
 
     @UecWrapper()
-    def ck(self,aka:str,state:StateUtils):
+    def ck(self, aka: str, state: StateUtils,func0=None,func3=None):
         d0 = self.cache.get(aka, None)
         if d0:
-            state.succ(1,'aka')
+            if func0:
+                func0(d0)
+            if func3:
+                func3(d0)
+            state.succ(1, 'aka')
         else:
             state.errn('ak')
         return state
+
     @UecWrapper()
     def keep(self, aka: str, state: StateUtils):
         if self.cache.get(aka):
@@ -92,22 +112,42 @@ class MyApp:
             state.errn('aka不存在')
         return state, us
 
-
-    async def websocket(self,ws:WebSocket,aka:str,call):
-        state0:StateUtils = self.ck(aka)
-        js = 0
+    def depshow(self):
+        t = time.time()
+        b0 = []
+        b1 = self.cache.expire_times()
+        for us, v in self.user_list.items():
+            aka = v.get('aka')
+            d2 = self.cache.get(aka)
+            live = -1
+            if d2:
+                live = int(b1.get(aka) - t)
+            else:
+                d2 = dict(ws=False,us=us,aka=aka,por='nuxx')
+            f = dict(live=live)
+            f.update(d2)
+            b0.append(f)
+        return b0
+    async def websocket(self, ws: WebSocket, aka: str, call):
+        def func0(d0):
+            d0['ws'] = True
+        state0:StateUtils = self.ck(aka,func0=func0)
+        # js = 0
         if state0.code == 1:
             await ws.accept()
+            # await ws.send_text(aka)
             while True:
                 try:
                     t = await asyncio.wait_for( ws.receive_json(),1)
                     data = CallModel(**t)
                     if data.act == 'cheack':
-                        state3 = self.cheack(aka,data.por)
+                        state3:StateUtils = self.cheack(aka,data.por)
+                        if state3.code == 1:
+                            self.keep(aka)
                     else:
                         call(data)
                 except asyncio.TimeoutError:
-                    js += 1
+                    # js += 1
                     state1:StateUtils = self.ck(aka)
                     if state1.code == 1:
                         pass
@@ -117,20 +157,24 @@ class MyApp:
                     break
                 except:
                     pass
+            def func3(d0):
+                d0['ws'] = False
+            state3: StateUtils = self.ck(aka,func3=func3)
 
 
 apm = MyApp()
-us = 'cap669'
-k0, state = apm.adds(LoginModel(**dict(us=us, pw='$2a$12$8RS227KstayHFO10FWO51eSo6YYCvxWB7gsa5/33aUlpbZhK.nvBO')))
+# us = 'cap669'
+# k0, state = apm.adds(LoginModel(**dict(us=us, pw='$2a$12$8RS227KstayHFO10FWO51eSo6YYCvxWB7gsa5/33aUlpbZhK.nvBO')))
+# apm.adds(LoginModel(**dict(us='cand', pw='$2a$12$8RS227KstayHFO10FWO51eSo6YYCvxWB7gsa5/33aUlpbZhK.nvBO')))
 if __name__ == '__main__':
-
+    pass
     # salt = bcrypt.gensalt(prefix=b"2a")
     # password = "akacap669"
     # hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     # print(hashed_password)
-    apm.cheack('akacap669', '$2a$12$LtZMuXXIkSWCe.B12wpQI.diRQc5/VR/HGSR2byFWpKfAKTWMBjci')
-    apm.cache._expire_times['akacap669'] = apm.cache.timer() + 10
-    time.sleep(2)
-    t = time.time()
-    for k, v in apm.cache.expire_times().items():
-        print(k, int(v - t))
+    # apm.cheack('akacap669', '$2a$12$LtZMuXXIkSWCe.B12wpQI.diRQc5/VR/HGSR2byFWpKfAKTWMBjci')
+    # apm.cache._expire_times['akacap669'] = apm.cache.timer() + 10
+    # time.sleep(2)
+    # t = time.time()
+    # for k, v in apm.cache.expire_times().items():
+    #     print(k, int(v - t))

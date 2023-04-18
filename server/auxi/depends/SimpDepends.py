@@ -4,7 +4,13 @@
 # @Author  : cap669
 # @File    : SimpDepends.py
 # @Software: PyCharm
-from server.auxi.request.SimpRequest import SimpRequest
+from server.auxi.request.SimpRequest import SimpRequest,Phuy
 class SimpDepends:
     def __call__(self,request:SimpRequest) -> SimpRequest:
+        phuy = Phuy()
+        self.set_phuy(phuy)
+        request.phuy =phuy
         return request
+
+    def set_phuy(self,phuy:Phuy):
+        pass

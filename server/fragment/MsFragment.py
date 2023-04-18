@@ -17,7 +17,7 @@ class MsFragment(XFragment):
 
         @router.post('/login')
         async def login(item: LoginModel):
-            apm.adds(item)
+            return apm.adds(item)
 
         @router.websocket('/test/{aka}')
         async def test(ws:WebSocket,aka:str):

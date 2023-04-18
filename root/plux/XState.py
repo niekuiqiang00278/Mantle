@@ -31,7 +31,15 @@ class XState:
     def __call__(self, func):
         pass
 
-
+    def get_code(self):
+        return self.code
+    def get_msg(self):
+        msg = 'nuxx'
+        try:
+            msg = self.msg[-1]['msg']
+        except:
+            pass
+        return msg
 class XSkin:
     def __call__(self, func):
         def wrapper(*args, **kwargs):
