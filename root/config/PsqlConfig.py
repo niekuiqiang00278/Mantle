@@ -10,11 +10,8 @@ from Config import env
 class PSqlConfig(BaseSettings):
     host: str
     port: int
+    user:str
     password: str
-    minsize: int = 10
-    maxsize: int = 10
-    encoding:str="utf-8"
-    decode_responses:bool = True
 
 class DevPSqlConfig(PSqlConfig):
     host = ''

@@ -1,3 +1,4 @@
+from server.base.rpc.MRpc import MRpc
 from server.fragment.ClientFragment import ClientFragment
 from server.fragment.GodFragment import GodFragment
 from server.fragment.MasterFragment import MasterFragment
@@ -11,8 +12,13 @@ class MyApp(XActivity):
 
     def bis(self):
         pass
+
+    def rpc(self):
+        # self.m = MRpc()
+        pass
+
     def fragment(self, app: FastAPI):
-        MsFragment(app)
+        MsFragment(app,self.m)
         GodFragment(app)
         # MasterFragment(app)
         # ClientFragment(app)

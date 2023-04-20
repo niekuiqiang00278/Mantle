@@ -12,8 +12,12 @@ class XActivity:
             allow_headers=["*"]
         )
         self.bis()
+        self.rpc()
         self.fragment(app)
-        uvicorn.run(app,host='192.168.31.208',port=8082)
+        uvicorn.run(app,host='127.0.0.1',port=8082)
+
+    def rpc(self):
+        pass
 
     def bis(self):
         pass

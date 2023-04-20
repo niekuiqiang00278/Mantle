@@ -4,12 +4,9 @@
 # @Author  : cap669
 # @File    : Cur.py
 # @Software: PyCharm
-# from abc import ABC,ABCMeta,abstractmethod
-from data.config.TestDBConfig import testdbconf
+from root.config.PsqlConfig import psqlconf
 from root.plux.XDatabase import XDatabase, DatabaseInject
-
-
-@DatabaseInject(name='lln',host=testdbconf.host, port=testdbconf.port,user=testdbconf.user, password=testdbconf.password)
+@DatabaseInject(name='lln',host=psqlconf.host, port=psqlconf.port,user=psqlconf.user, password=psqlconf.password)
 class TestDb(XDatabase):
     pass
 

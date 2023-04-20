@@ -7,13 +7,14 @@ from fastapi import FastAPI, APIRouter, Depends,WebSocket,WebSocketDisconnect
 
 @FragmentInjection(prefix='/ffw', dependencies=[Depends(SimpDepends())])
 class MsFragment(XFragment):
-    def __init__(self, app: FastAPI):
+    def __init__(self, app: FastAPI,m):
         XFragment.__init__(self, app)
+        self.m = m
 
     def register_router(self, router: APIRouter):
-        @router.post('/fff')
+        @router.get('/fff')
         async def fff():
-            pass
+            return self.m.m0()
 
         @router.post('/login')
         async def login(item: LoginModel):
