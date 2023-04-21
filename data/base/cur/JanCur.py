@@ -18,6 +18,7 @@ class Jan0Cur(Job0Cur):
 class Jan1Cur(Job1Cur):
     class Meta:
         database = janbase
+        table_name = 'jan1'
 
 
 class Jan2Cur(Job2Cur):

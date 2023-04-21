@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2023/4/21 23:57
 # @Author  : cap669
-# @File    : XBis.py
+# @File    : XJob.py
 # @Software: PyCharm
 import traceback
 
@@ -27,10 +27,10 @@ class XHis0:
         self.cur = cur
 
 
-class XBis0(XHis0):
-    def __init__(self, Jan0Cur: Model, db: PooledPostgresqlDatabase, safe_table: bool = True, clear_table: bool = False,
+class XJob0(XHis0):
+    def __init__(self, cur: Model, db: PooledPostgresqlDatabase, safe_table: bool = True, clear_table: bool = False,
                  func: Any = None):
-        XHis0.__init__(self, Jan0Cur, safe_table, clear_table, func)
+        XHis0.__init__(self, cur, safe_table, clear_table, func)
         self.db = db
 
     @EvsWrapper()
@@ -80,9 +80,10 @@ class XBis0(XHis0):
                 print(traceback.format_exc())
                 state.errn('')
         return state
+
     @EvsWrapper()
     def gets(self, aka: str, state: StateUtils, msg: str = 'nuxx'):
-        uid,info = '',''
+        uid, info = '', ''
         with self.db.atomic():
             d0 = self.cur.select().where(self.cur.fnsh == 1).for_update().get()
             d0.rtime = Utils.u0()
@@ -95,7 +96,7 @@ class XBis0(XHis0):
                 info = d0.info
             else:
                 state.errn()
-        return state,uid, info
+        return state, uid, info
 
     @EvsWrapper()
     def outs(self, aka: str, state: StateUtils, msg: str = 'nuxx'):
@@ -121,13 +122,36 @@ class XBis0(XHis0):
         return bag
 
 
-class XBis1:
-    def __init__(self):
+class XJob1(XHis0):
+    def __init__(self, cur: Model, db: PooledPostgresqlDatabase, safe_table: bool = True, clear_table: bool = False,
+                 func: Any = None):
+        XHis0.__init__(self, cur, safe_table, clear_table, func)
+        self.db = db
+
+    def adds(self):
+        pass
+
+    def comp(self):
+        pass
+
+    @EvsWrapper()
+    def gets(self,state:StateUtils, uid=None):
+        if uid:
+            state.succ(1,'更具uid寻找任务')
+
+        if state.code == 1:
+            pass
+        else:
+            state.succ(1,'新任务')
+    def outs(self):
+        pass
+
+    def show(self):
         pass
 
 
-class XBis2:
+class XJob2:
     def __init__(self):
         pass
 
-# Tips     :
+# Tips     :支持任务分布式分发,允许中断,

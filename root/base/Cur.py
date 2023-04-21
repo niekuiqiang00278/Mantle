@@ -39,7 +39,18 @@ class Job1Cur(Job0Cur):
 
 
 class Job2Cur(Model):
-    pass
+    uid = TextField(unique=True)
+    # 唯一任务ID
+    info = TextField()
+    # 信息
+    msg = TextField(default='nuxx')
+    # 消息
+    ctime = DateTimeField()
+    # 创建任务的时间
+    stime = DateTimeField(default=q0)
+    # 完成任务后的时间
+    diff = IntegerField(default=-1)
+    # 验证点
 
 
 @DatabaseInject(name='test', host=psqlconf.host, port=psqlconf.port,

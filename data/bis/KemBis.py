@@ -7,7 +7,7 @@
 from data.base.Cur import janbase
 from data.base.cur.JanCur import Jan0Cur
 from root.base.wrapper.EvsWrapper import EvsWrapper
-from root.plux.XBis import XBis0
+from root.plux.XJob import XJob0
 from pydantic import BaseModel
 from json import loads, dumps
 from typing import List
@@ -20,9 +20,9 @@ class EcModel(BaseModel):
     w: str
 
 
-class KemBis(XBis0):
+class KemBis(XJob0):
     def __init__(self):
-        XBis0.__init__(self, Jan0Cur, janbase, clear_table=True)
+        XJob0.__init__(self, Jan0Cur, janbase, clear_table=True)
 
     def __ec1(self, data: str):
         return EcModel(**loads(data))
