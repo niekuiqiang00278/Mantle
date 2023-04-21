@@ -10,15 +10,17 @@ from Config import env
 class PSqlConfig(BaseSettings):
     host: str
     port: int
-    user:str
+    user:str='postgres'
     password: str
-
+    max_connections:int = 8
 class DevPSqlConfig(PSqlConfig):
-    host = ''
-    port = 0
-    password = ''
+    host = '192.168.31.123'
+
+    port = 12009
+    password = 'ccwsd789'
 class ProPSqlConfig(PSqlConfig):
     host = ''
+
     port = 0
     password = ''
 

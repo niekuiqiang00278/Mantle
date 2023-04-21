@@ -6,8 +6,8 @@
 # @Software: PyCharm
 from root.config.PsqlConfig import psqlconf
 from root.plux.XDatabase import XDatabase, DatabaseInject
-@DatabaseInject(name='lln',host=psqlconf.host, port=psqlconf.port,user=psqlconf.user, password=psqlconf.password)
+@DatabaseInject(name='jan',host=psqlconf.host, port=psqlconf.port,user=psqlconf.user, password=psqlconf.password,max_connections=psqlconf.max_connections)
 class TestDb(XDatabase):
     pass
 
-database = TestDb().database
+janbase = TestDb().database

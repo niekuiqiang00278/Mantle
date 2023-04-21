@@ -1,5 +1,6 @@
 from data.base.Dmd import Dmd
 from data.base.rpc.KRpc import KRpc
+from data.bis.KemBis import KemBis
 from data.plux.XActivity import XActivity
 
 
@@ -12,10 +13,10 @@ class MyApp(XActivity):
         pass
 
     def bis(self):
-        pass
+        self.kem = KemBis()
 
     def rpc(self):
-        # self.k = KRpc()
+        self.k = KRpc()
         pass
 
 if __name__ == '__main__':

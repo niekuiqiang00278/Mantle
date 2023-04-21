@@ -4,17 +4,16 @@
 # @Author  : cap669
 # @File    : XDatabase.py
 # @Software: PyCharm
-from peewee import PostgresqlDatabase
-
-
-def DatabaseInject(name,host, port,user, password):
+from playhouse.pool import PooledPostgresqlDatabase
+def DatabaseInject(name,host, port,user, password,max_connections,cheack:bool=True):
     def back(cls):
         cls.name = name
         cls.host = host
         cls.port = port
         cls.user = user
         cls.password = password
-
+        cls.max_connections=max_connections
+        cls.cheack = cheack
         return cls
 
     return back
@@ -26,12 +25,16 @@ class XDatabase:
     port: str
     user:str
     password: str
-
+    max_connections:int
+    cheack:bool
     def __init__(self):
-        self.database = PostgresqlDatabase(
+        self.database = PooledPostgresqlDatabase(
             self.name,
             host=self.host,
             port=self.port,
             user=self.user,
             password=self.password,
+            max_connections=self.max_connections
         )
+        if self.cheack:
+            self.database.connect()
