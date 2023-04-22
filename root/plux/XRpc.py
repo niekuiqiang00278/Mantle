@@ -48,10 +48,7 @@ class RpcCl:
     port: int
 
     def __init__(self):
-        pass
+        self.register_stub(grpc.insecure_channel(f'{self.host}:{self.port}'))
 
     def register_stub(self, channel):
         pass
-
-    def register_channel(self):
-        return grpc.insecure_channel(f'{self.host}:{self.port}')

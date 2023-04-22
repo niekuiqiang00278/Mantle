@@ -8,14 +8,13 @@ from pydantic import BaseSettings
 from functools import lru_cache
 from Config import env
 class PSqlConfig(BaseSettings):
-    host: str
-    port: int
+    host: str = '127.0.0.1'
+    port: int =5432
     user:str='postgres'
     password: str
     max_connections:int = 8
 class DevPSqlConfig(PSqlConfig):
     host = '192.168.31.123'
-
     port = 12009
     password = 'ccwsd789'
 class ProPSqlConfig(PSqlConfig):

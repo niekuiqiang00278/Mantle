@@ -34,41 +34,45 @@ class KemBis(XJob0):
 
     @EvsWrapper()
     def ke0(self, name: str, w: str, state: StateUtils):
-        d0 = self.__ec0(name, w)
-        d1 = dumps(d0)
-        self.adds(
-            info=d1
-        )
+        try:
+            d0 = EcModel(name=name, w=w)
+            d1 = dumps(d0.dict())
+            self.adds(info=d1, state=state)
+        except:
+            state.errn('')
+        return state
 
-    def ke11(self, data: List[str]):
-        self.addc(
-            data
-        )
+    @EvsWrapper()
+    def ke11(self, data: List[EcModel], state: StateUtils):
+        def func(d0: EcModel):
+            return dumps(d0.dict())
 
-    def ke1(self,uid):
+        self.addc(data=data, func=func, state=state)
+        return state
+
+    @EvsWrapper()
+    def ke1(self, uid, state: StateUtils):
         @EvsWrapper()
         def func(state: StateUtils):
-            state.succ(1)
+            state.errn()
             return state
-        return self.comp(
-            func,uid
-        )
 
-    def ke2(self, aka: str):
-        state,uid, info = self.gets(
-            aka
-        )
+        return self.comp(func=func, uid=uid, state=state)
+
+    @EvsWrapper()
+    def ke2(self, aka: str, state: StateUtils):
+        uid, info = self.gets(aka=aka, state=state)
         name, w = '', ''
         if state.code == 1:
             d0 = self.__ec1(info)
             name = d0.name
             w = d0.w
-        return uid,name, w
+        return uid, name, w, state
 
-    def ke3(self, aka: str):
-        state = self.outs(
-            aka
-        )
+    @EvsWrapper()
+
+    def ke3(self, aka: str, state: StateUtils):
+        self.outs(aka=aka,state=state)
 
     def ke8(self):
         self.show()
@@ -84,16 +88,22 @@ if __name__ == '__main__':
 
 
     def func0():
-        kem.ke0(e1, e2)
-        uid,name, w = kem.ke2(akacand)
-        print(uid,name, w)
-        state = kem.ke1(uid)
-        print(state)
+        kem.ke0(e1, 2)
+        uid, name, w, state = kem.ke2(akacand)
+        kem.ke3(akacand)
+        # if state.code == 1:
+        #     state = kem.ke1(uid)
 
 
     def func1():
-        kem.ke11(e0)
-        kem.ke2(akacand)
+        f = []
+        for e in e0:
+            z = EcModel(name=e, w=e)
+            f.append(z)
+        kem.ke11(f)
+        uid, name, w, state = kem.ke2(akacand)
+        if state.code == 1:
+            state = kem.ke1(uid)
 
 
     f = 0

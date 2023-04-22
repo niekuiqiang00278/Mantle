@@ -24,5 +24,5 @@ class Jan1Cur(Job1Cur):
 class Jan2Cur(Job2Cur):
     class Meta:
         database = janbase
-
+        table_name = 'jan2'
 # Tips     :

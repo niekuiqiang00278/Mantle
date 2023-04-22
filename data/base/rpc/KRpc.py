@@ -21,6 +21,7 @@ class Greeter(hello_pb2_grpc.GreeterServicer):
 class KRpc(XRpcSe):
     def register_rpc(self, server):
         hello_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
-
+if __name__ == '__main__':
+    KRpc()
 
 # Tips     :
