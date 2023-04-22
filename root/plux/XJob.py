@@ -22,6 +22,11 @@ class Job0Model(BaseModel):
     ctime: datetime.datetime
 
 
+class Job1Model(Job0Model):
+    an: int
+    en: int
+
+
 class XHis0:
     def __init__(self, cur: Model, safe_table: bool, clear_table: bool, func):
         if safe_table:
@@ -52,7 +57,7 @@ class XJob0(XHis0):
                 state.errn()
         return state
 
-    def addc(self, data: List[Any],func:Any, state: StateUtils):
+    def addc(self, data: List[Any], func: Any, state: StateUtils):
         ctime = Utils.u0()
         with self.db.atomic():
             try:
@@ -105,7 +110,7 @@ class XJob0(XHis0):
     def outs(self, aka: str, state: StateUtils, msg: str = 'nuxx'):
         with self.db.atomic():
             try:
-                d0 = self.cur.select().where(self.cur.aka == aka).for_update().get()
+                d0 = self.cur.select().where((self.cur.fnsh == 2) & (self.cur.aka == aka)).for_update().get()
                 d0.rtime = Utils.u0()
                 d0.fnsh = 1
                 if msg == 'nuxx':
@@ -117,7 +122,7 @@ class XJob0(XHis0):
                 else:
                     state.errn('')
             except self.cur.DoesNotExist:
-                    state.errn()
+                state.errn()
 
     def show(self):
         d0 = self.cur.select()
@@ -135,18 +140,12 @@ class XJob1(XHis0):
         XHis0.__init__(self, cur, safe_table, clear_table, func)
         self.db = db
 
-    @EvsWrapper()
     def adds(self, info: str, state: StateUtils, an: int = 0, en: int = 0):
         if an >= en:
-            d0 = dict(
-                uid=Utils.f1(),
-                info=info,
-                an=an,
-                en=en,
-                ctime=Utils.u0()
-            )
+            d0 = Job1Model(uid=Utils.f1(), info=info, an=an, en=en, ctime=Utils.u0())
+            d1 = d0.dict()
             with self.db.atomic():
-                e0 = self.cur.insert_many(d0).execute()
+                e0 = self.cur.insert_many(d1).execute()
                 if e0:
                     state.succ(1)
                 else:
@@ -155,20 +154,54 @@ class XJob1(XHis0):
             state.errn()
         return state
 
-    def comp(self, uid):
-        d0 = self.cur.select().where((self.cur.fnsh == 2) & (self.cur.uid == uid)).for_update().get()
-        d0.rtime = Utils.u0()
-        d0.en = d0.en + 1
-        d0.save()
-        if d0.an == d0.en:
-            d0.fnsh = 4
-            d0.save()
+    def comp(self, uid,func, state: StateUtils):
+        with self.db.atomic():
+            try:
+                d0 = self.cur.select().where((self.cur.fnsh == 2) & (self.cur.uid == uid)).for_update().get()
+                if d0.an > d0.en:
+                    sta:StateUtils = func()
+                    if sta.code == 1:
+                        d0.rtime = Utils.u0()
+                        d0.en = d0.en + 1
+                        if d0.save():
+                            state.succ(1)
+                            if d0.an == d0.en:
+                                d0.fnsh = 4
+                                if d0.save():
+                                    state.succ(2)
+                                else:
+                                    state.errn('')
+                        else:
+                            state.errn()
+                    else:
+                        state.errn('')
+                else:
+                    state.errn('')
+            except:
+                state.errn()
 
-    @EvsWrapper()
+    def outs(self,aka:str,state:StateUtils,msg:str = 'nuxx'):
+        with self.db.atomic():
+            try:
+                d0 = self.cur.select().where((self.cur.fnsh == 2) & (self.cur.aka == aka)).for_update().get()
+                d0.rtime = Utils.u0()
+                d0.fnsh = 1
+                if msg == 'nuxx':
+                    msg = f'cur:{aka}'
+                d0.msg = msg
+                d0.aka = 'nuxx'
+                if d0.save():
+                    state.succ(1)
+                else:
+                    state.errn('')
+            except self.cur.DoesNotExist:
+                state.errn()
+
+
     def gets(self, aka: str, state: StateUtils, msg: str = 'nuxx'):
         uid, info = '', ''
-        if aka:
-            with self.db.atomic():
+        with self.db.atomic():
+            if aka:
                 try:
                     d0 = self.cur.select().where((self.cur.fnsh == 2) & (self.cur.aka == aka)).for_update().get()
                     d0.rtime = Utils.u0()
@@ -181,37 +214,25 @@ class XJob1(XHis0):
                     info = d0.info
                 except self.cur.DoesNotExist:
                     state.errn()
-
-        if state.code == 1:
-            pass
-        else:
-            with self.db.atomic():
-                d0 = self.cur.select().where(self.cur.fnsh == 1).for_update().get()
-                d0.rtime = Utils.u0()
-                d0.fnsh = 2
-                d0.msg = msg
-                d0.aka = aka
-                if d0.save():
-                    state.succ(1, '新任务')
-                    uid = d0.uid
-                    info = d0.info
-                else:
-                    state.errn()
-        return state, uid, info
-
-    @EvsWrapper()
-    def outs(self, aka: str, state: StateUtils, msg: str = 'nuxx'):
-        with self.db.atomic():
-            d0 = self.cur.select().where((self.cur.fnsh == 2) & (self.cur.aka == aka)).for_update().get()
-            d0.rtime = Utils.u0()
-            d0.fnsh = 1
-            d0.msg = msg
-            d0.save()
-            if d0.save():
-                state.succ(1)
+            if state.code == 1:
+                pass
             else:
-                state.errn()
-        return state
+                try:
+                    d0 = self.cur.select().where(self.cur.fnsh == 1).for_update().get()
+                    d0.rtime = Utils.u0()
+                    d0.fnsh = 2
+                    d0.msg = msg
+                    d0.aka = aka
+                    if d0.save():
+                        state.succ(1, '新任务')
+                        uid = d0.uid
+                        info = d0.info
+                    else:
+                        state.errn()
+                except:
+                    state.errn()
+        return uid, info
+
 
     def show(self):
         pass
